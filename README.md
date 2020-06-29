@@ -8,7 +8,7 @@ sql在dao包下接口中
 生成的Model所在文件夹：src-->com-->company-->createModel-->entity  
 生成的Dao所在文件夹：src-->com-->company-->createModel-->dao  
 修改链接数据库配置：src-->com-->company-->createModel-->config-->DatabaseConfigs   
-![Image text](https://github.com/SunBin777/CreateModel/image/createModelImage4.jpg) 
+![Image text](image/createModleImage4.jpg) 
 
 
 ###注意事项
@@ -18,7 +18,7 @@ sql在dao包下接口中
     --> 选择jar包，尽量跟我的版本别差太多-->勾上对号--->点击ok即可
     mybatis版本:mybatis-3.5.3.jar  
     mysql版本:mysql-connector-java-8.0.17.jar  
-![Image text](https://github.com/SunBin777/CreateModel/image/createModelImage1.jpg)  
-![Image text](https://github.com/SunBin777/CreateModel/image/createModelImage2.jpg)  
-![Image text](https://github.com/SunBin777/CreateModel/image/createModelImage3.jpg) 
+![Image text](image/createModleImage1.jpg)  
+![Image text](image/createModleImage2.jpg)  
+![Image text](image/createModleImage3.jpg) 
  
