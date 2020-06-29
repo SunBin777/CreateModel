@@ -13,9 +13,6 @@ import java.util.List;
 public class DatabaseUtil {
 
 
-
-
-
     // 数据库操作
     private static final String SQL = "SELECT * FROM ";
 
@@ -67,7 +64,7 @@ public class DatabaseUtil {
             //获取数据库的元数据
             DatabaseMetaData db = conn.getMetaData();
             //从元数据中获取到所有的表名
-            rs = db.getTables(null, null, null, new String[] { "TABLE" });
+            rs = db.getTables(conn.getCatalog(), conn.getCatalog(),"%", new String[] { "TABLE" });
             while(rs.next()) {
                 tableNames.add(rs.getString(3));
             }
