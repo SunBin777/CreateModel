@@ -32,9 +32,9 @@ public class FileDatabaseUtil {
         sb.append("import java.math.BigDecimal;\n\n");
         sb.append("public class ");
         sb.append(tableName);
-        sb.append("Model{\n\n");
+        sb.append("{\n\n");
         for (int i = 0; i < columnNames.size(); i++) {
-            String type = columnType(columnTypes.get(i));
+            String type = columnType(columnTypes.get(i),columnNames.get(i));
             //注释
             sb.append("    /**\n");
             sb.append("     * 列名:" + columnNames.get(i) + "\n");
@@ -56,16 +56,16 @@ public class FileDatabaseUtil {
             sb.append("    public");
             sb.append(" " + type);
             sb.append(" get" + capName + "() {\n");
-            sb.append(" return " + name + ";\n");
+            sb.append("        return " + name + ";\n");
             sb.append("    }\n\n");
             sb.append("    public");
             sb.append(" void");
             sb.append(" set" + capName + "(" + type + " " + name + ") {\n");
-            sb.append(" this. " + name + " = " + name + ";\n");
+            sb.append("        this. " + name + " = " + name + ";\n");
             sb.append("    }\n\n");
         }
         sb.append("}");
-        generateFileModel(tableName, sb.toString(), DatabaseConfigs.PATHS + "entity\\" + tableName + "Model.java");
+        generateFileModel(tableName, sb.toString(), DatabaseConfigs.PATHS + "entity\\" + tableName + ".java");
         return true;
     }
 
@@ -87,7 +87,7 @@ public class FileDatabaseUtil {
         sb.append("import java.math.BigDecimal;\n");
         sb.append("import org.apache.ibatis.annotations.*;\n");
         sb.append("import org.apache.ibatis.jdbc.SQL;\n");
-        sb.append("import " + DatabaseConfigs.PACKAGEPATHS + ".entity." + tableName + "Model;\n\n");
+        sb.append("import " + DatabaseConfigs.PACKAGEPATHS + ".entity." + tableName + ";\n\n");
         sb.append("@Mapper\n");
         sb.append("public interface " + tableName + "Dao{\n\n");
         sb.append("    /**\n");
@@ -95,19 +95,19 @@ public class FileDatabaseUtil {
         sb.append("     * @param model   实体类\n");
         sb.append("     */\n");
         sb.append("    @InsertProvider(type = " + tableName + "DaoProvider.class, method = \"create\")\n");
-        sb.append("    Integer create(" + tableName + "Model model);\n\n");
+        sb.append("    Integer create(" + tableName + " model);\n\n");
         sb.append("    /**\n");
         sb.append("     * 修改\n");
         sb.append("     * @param model   实体类\n");
         sb.append("     */\n");
         sb.append("    @UpdateProvider(type = " + tableName + "DaoProvider.class, method = \"update\")\n");
-        sb.append("    Integer update(" + tableName + "Model model);\n\n");
+        sb.append("    Integer update(" + tableName + " model);\n\n");
         sb.append("    /**\n");
         sb.append("     * 查询\n");
         sb.append("     * @param model   实体类\n");
         sb.append("     */\n");
-        sb.append("    @UpdateProvider(type = " + tableName + "DaoProvider.class, method = \"query\")\n");
-        sb.append("    Integer query(" + tableName + "Model model);\n\n");
+        sb.append("    @SelectProvider(type = " + tableName + "DaoProvider.class, method = \"query\")\n");
+        sb.append("    Integer query(" + tableName + " model);\n\n");
         sb.append("\n\n\n");
         sb.append("    class " + tableName + "DaoProvider{\n");
         sb.append(daoCreate(tableNames,columnNames,columnTypes,columnComments));
@@ -136,16 +136,16 @@ public class FileDatabaseUtil {
         sb.append("         * 创建\n");
         sb.append("         * @param model   实体类\n");
         sb.append("         */\n");
-        sb.append("        public String create(final " + tableName + "Model model){\n");
+        sb.append("        public String create(final " + tableName + " model){\n");
         sb.append("            return new SQL(){{\n");
         sb.append("            INSERT_INTO(\"" + tableNames + "\");\n");
         for (int i = 0; i < columnNames.size(); i++) {
             String name = columnNames.get(i);
             //大写首字母
             String capName = captureName(name);
-            String type = columnType(columnTypes.get(i));
+            String type = columnType(columnTypes.get(i),columnNames.get(i));
             if("String".equals(type)) {
-                sb.append("                if(!(model.get" + capName + "() != null || model.get" + capName + "().isEmpty())){\n");
+                sb.append("                if(!(model.get" + capName + "() == null || model.get" + capName + "().isEmpty())){\n");
             }else {
                 sb.append("                if(model.get" + capName + "() != null){\n");
             }
@@ -173,16 +173,16 @@ public class FileDatabaseUtil {
         sb.append("         * 修改\n");
         sb.append("         * @param model   实体类\n");
         sb.append("         */\n");
-        sb.append("        public String update(final " + tableName + "Model model){\n");
+        sb.append("        public String update(final " + tableName + " model){\n");
         sb.append("            return new SQL(){{\n");
         sb.append("            UPDATE(\"" + tableNames + "\");\n");
         for (int i = 0; i < columnNames.size(); i++) {
             String name = columnNames.get(i);
             //大写首字母
             String capName = captureName(name);
-            String type = columnType(columnTypes.get(i));
+            String type = columnType(columnTypes.get(i),columnNames.get(i));
             if("String".equals(type)) {
-                sb.append("                if(!(model.get" + capName + "() != null || model.get" + capName + "().isEmpty())){\n");
+                sb.append("                if(!(model.get" + capName + "() == null || model.get" + capName + "().isEmpty())){\n");
             }else {
                 sb.append("                if(model.get" + capName + "() != null){\n");
             }
@@ -213,7 +213,7 @@ public class FileDatabaseUtil {
         sb.append("         * 查询\n");
         sb.append("         * @param model   实体类\n");
         sb.append("         */\n");
-        sb.append("        public String query(final " + tableName + "Model model){\n");
+        sb.append("        public String query(final " + tableName + " model){\n");
         sb.append("            StringBuilder sb = new StringBuilder();\n");
         sb.append("            sb.append(\" SELECT \");\n");
         sb.append("            sb.append(\"");
@@ -268,7 +268,7 @@ public class FileDatabaseUtil {
      * @param dataType
      * @return
      */
-    private static String columnType(String dataType) {
+    private static String columnType(String dataType,String columnName) {
         if (dataType == null) {
             return "String";
         }
@@ -278,6 +278,12 @@ public class FileDatabaseUtil {
         }
         //Integer类型
         if (integerType(dataType)) {
+            if(dataType.length() < 2){
+                return "Integer";
+            }
+            if("id".equals(columnName.substring(columnName.length()-2)) || "Id".equals(columnName.substring(columnName.length()-2))){
+                return "Long";
+            }
             return "Integer";
         }
         //decimal类型
@@ -386,14 +392,26 @@ public class FileDatabaseUtil {
     }
 
     /**
-     * 首字母大写
+     * 首字母大写 如果有下划线 那么下划线之后的第一个字符大写
      * @param name
      * @return
      */
     public static String captureName(String name) {
-        char[] cs = name.toCharArray();
-        cs[0] -= 32;
-        return String.valueOf(cs);
+        String[] strs = null;
+        if(name == null){
+            return null;
+        }
+        strs = name.split("_");
+        if (strs == null || strs.length < 1){
+            strs = new String[]{name};
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String str : strs){
+            char[] cs = str.toCharArray();
+            cs[0] -= 32;
+            sb.append(String.valueOf(cs));
+        }
+        return sb.toString();
     }
 
     /**

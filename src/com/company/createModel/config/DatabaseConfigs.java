@@ -8,7 +8,7 @@ public class DatabaseConfigs {
     //jdbc包
     public final static String DRIVER = "com.mysql.cj.jdbc.Driver";
     //路径
-    public final static String URL = "jdbc:mysql://localhost:3306/userdb?useUnicode=true&characterEncoding=utf8&useSSL=false";
+    public final static String URL = "jdbc:mysql://localhost:3306/productiondb?useUnicode=true&characterEncoding=utf8&useSSL=false";
     //用户名
     public final static String USERNAME = "root";
     //密码
