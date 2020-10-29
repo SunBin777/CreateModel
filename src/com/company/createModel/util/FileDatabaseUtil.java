@@ -35,16 +35,17 @@ public class FileDatabaseUtil {
         sb.append("{\n\n");
         for (int i = 0; i < columnNames.size(); i++) {
             String type = columnType(columnTypes.get(i),columnNames.get(i));
+            String littleCaptureName = littleCaptureName(columnNames.get(i));
             //注释
             sb.append("    /**\n");
-            sb.append("     * 列名:" + columnNames.get(i) + "\n");
+            sb.append("     * 列名:" + littleCaptureName + "\n");
             sb.append("     * 数据库类型:" + columnTypes.get(i) + "\n");
             sb.append("     * 数据库注释:" + columnComments.get(i) + "\n");
             sb.append("     */\n");
             //字段
             sb.append("    private");
             sb.append(" " + type);
-            sb.append(" " + columnNames.get(i) + ";\n\n\n");
+            sb.append(" " + littleCaptureName + ";\n\n\n");
             columnType.put(columnNames.get(i), type);
         }
         //getset方法
@@ -53,15 +54,16 @@ public class FileDatabaseUtil {
             String name = columnNames.get(i);
             String capName = captureName(name);
             String type = columnType.get(columnNames.get(i));
+            String littleCaptureName = littleCaptureName(columnNames.get(i));
             sb.append("    public");
             sb.append(" " + type);
             sb.append(" get" + capName + "() {\n");
-            sb.append("        return " + name + ";\n");
+            sb.append("        return " + littleCaptureName + ";\n");
             sb.append("    }\n\n");
             sb.append("    public");
             sb.append(" void");
-            sb.append(" set" + capName + "(" + type + " " + name + ") {\n");
-            sb.append("        this. " + name + " = " + name + ";\n");
+            sb.append(" set" + capName + "(" + type + " " + littleCaptureName + ") {\n");
+            sb.append("        this. " + littleCaptureName + " = " + littleCaptureName + ";\n");
             sb.append("    }\n\n");
         }
         sb.append("}");
@@ -143,13 +145,14 @@ public class FileDatabaseUtil {
             String name = columnNames.get(i);
             //大写首字母
             String capName = captureName(name);
+            String littleCaptureName = littleCaptureName(name);
             String type = columnType(columnTypes.get(i),columnNames.get(i));
             if("String".equals(type)) {
                 sb.append("                if(!(model.get" + capName + "() == null || model.get" + capName + "().isEmpty())){\n");
             }else {
                 sb.append("                if(model.get" + capName + "() != null){\n");
             }
-            sb.append("                    VALUES(\"" + name + "\", \"#{" + name + "}\");\n");
+            sb.append("                    VALUES(\"" + name + "\", \"#{" + littleCaptureName + "}\");\n");
             sb.append("                }\n");
         }
         sb.append("            }}.toString();\n");
@@ -180,13 +183,14 @@ public class FileDatabaseUtil {
             String name = columnNames.get(i);
             //大写首字母
             String capName = captureName(name);
+            String littleCaptureName = littleCaptureName(name);
             String type = columnType(columnTypes.get(i),columnNames.get(i));
             if("String".equals(type)) {
                 sb.append("                if(!(model.get" + capName + "() == null || model.get" + capName + "().isEmpty())){\n");
             }else {
                 sb.append("                if(model.get" + capName + "() != null){\n");
             }
-            sb.append("                    SET(\"" + name + "=#{" + name + "}\");\n");
+            sb.append("                    SET(\"" + name + "=#{" + littleCaptureName + "}\");\n");
             sb.append("                }\n");
         }
         sb.append("                    WHERE(\"id=#{id}\");\n");
@@ -407,6 +411,36 @@ public class FileDatabaseUtil {
         }
         StringBuilder sb = new StringBuilder();
         for (String str : strs){
+            char[] cs = str.toCharArray();
+            cs[0] -= 32;
+            sb.append(String.valueOf(cs));
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * 首字母小写 如果有下划线 那么下划线之后的第一个字符大写
+     * @param name
+     * @return
+     */
+    public static String littleCaptureName(String name) {
+        String[] strs = null;
+        if(name == null){
+            return null;
+        }
+        strs = name.split("_");
+        if (strs == null || strs.length < 1){
+            strs = new String[]{name};
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (String str : strs){
+            if(i == 0){
+               sb.append(str);
+               ++i;
+               continue;
+            }
             char[] cs = str.toCharArray();
             cs[0] -= 32;
             sb.append(String.valueOf(cs));
