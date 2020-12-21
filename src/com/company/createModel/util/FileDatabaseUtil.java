@@ -108,8 +108,8 @@ public class FileDatabaseUtil {
         sb.append("     * 查询\n");
         sb.append("     * @param model   实体类\n");
         sb.append("     */\n");
-        sb.append("    @SelectProvider(type = " + tableName + "DaoProvider.class, method = \"query\")\n");
-        sb.append("    Integer query(" + tableName + " model);\n\n");
+        sb.append("    @SelectProvider(type = " + tableName + "DaoProvider.class, method = \"findAll\")\n");
+        sb.append("    List<" + tableName + "> findAll(" + tableName + " model);\n\n");
         sb.append("\n\n\n");
         sb.append("    class " + tableName + "DaoProvider{\n");
         sb.append(daoCreate(tableNames,columnNames,columnTypes,columnComments));
@@ -217,7 +217,7 @@ public class FileDatabaseUtil {
         sb.append("         * 查询\n");
         sb.append("         * @param model   实体类\n");
         sb.append("         */\n");
-        sb.append("        public String query(final " + tableName + " model){\n");
+        sb.append("        public String findAll(final " + tableName + " model){\n");
         sb.append("            StringBuilder sb = new StringBuilder();\n");
         sb.append("            sb.append(\" SELECT \");\n");
         sb.append("            sb.append(\"");
@@ -233,6 +233,7 @@ public class FileDatabaseUtil {
             if(i % 5 == 0){
                 sb.append("\");\n");
                 sb.append("            sb.append(\"");
+                sb.append(" " + alias + "." + columnNames.get(i) + ",");
             }else {
                 sb.append(" " + alias + "." + columnNames.get(i) + ",");
             }
