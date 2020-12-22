@@ -299,6 +299,10 @@ public class FileDatabaseUtil {
         if (dateType(dataType)) {
             return "Date";
         }
+        //Boolean类型
+        if (boolType(dataType)) {
+            return "Boolean";
+        }
         return "String";
     }
 
@@ -391,6 +395,17 @@ public class FileDatabaseUtil {
             return true;
         }
         if ("TIME".equals(dataType)) {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * 判断是否为布尔类型
+     * @param dataType
+     * @return
+     */
+    private static Boolean boolType(String dataType) {
+        if ("BIT".equals(dataType)) {
             return true;
         }
         return false;
