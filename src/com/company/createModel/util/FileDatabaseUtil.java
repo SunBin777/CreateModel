@@ -85,10 +85,11 @@ public class FileDatabaseUtil {
         Map<String, String> columnType = new HashMap<>();
         StringBuilder sb = new StringBuilder();
         sb.append("package " + DatabaseConfigs.PACKAGEPATHS + ".dao;\n\n");
-        sb.append("import java.util.Date;\n");
-        sb.append("import java.math.BigDecimal;\n");
         sb.append("import org.apache.ibatis.annotations.*;\n");
-        sb.append("import org.apache.ibatis.jdbc.SQL;\n");
+        sb.append("import org.apache.ibatis.jdbc.SQL;\n\n");
+        sb.append("import java.util.Date;\n");
+        sb.append("import java.util.List;\n");
+        sb.append("import java.math.BigDecimal;\n");
         sb.append("import " + DatabaseConfigs.PACKAGEPATHS + ".entity." + tableName + ";\n\n");
         sb.append("@Mapper\n");
         sb.append("public interface " + tableName + "Dao{\n\n");

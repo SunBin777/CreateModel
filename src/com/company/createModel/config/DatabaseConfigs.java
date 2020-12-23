@@ -8,7 +8,7 @@ public class DatabaseConfigs {
     //jdbc包
     public final static String DRIVER = "com.mysql.cj.jdbc.Driver";
     //路径
-    public final static String URL = "jdbc:mysql://localhost:3306/ruishiorder?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai";
+    public final static String URL = "jdbc:mysql://192.168.1.201:3306/ruishiorder?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai";
     //用户名
     public final static String USERNAME = "root";
     //密码
