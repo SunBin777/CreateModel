@@ -17,10 +17,11 @@ public class FileDatabaseUtil {
 
     /**
      * 生成ModeL
-     * @param tableNames        表名
-     * @param columnNames       列名
-     * @param columnTypes       列类型
-     * @param columnComments    列注释
+     *
+     * @param tableNames     表名
+     * @param columnNames    列名
+     * @param columnTypes    列类型
+     * @param columnComments 列注释
      * @return
      */
     public static Boolean generateFileModels(String tableNames, List<String> columnNames, List<String> columnTypes, List<String> columnComments) {
@@ -34,7 +35,7 @@ public class FileDatabaseUtil {
         sb.append(tableName);
         sb.append("{\n\n");
         for (int i = 0; i < columnNames.size(); i++) {
-            String type = columnType(columnTypes.get(i),columnNames.get(i));
+            String type = columnType(columnTypes.get(i), columnNames.get(i));
             String littleCaptureName = littleCaptureName(columnNames.get(i));
             //注释
             sb.append("    /**\n");
@@ -74,10 +75,11 @@ public class FileDatabaseUtil {
 
     /**
      * 生成Dao 创建 修改 查询单个
-     * @param tableNames        表名
-     * @param columnNames       列名
-     * @param columnTypes       列类型
-     * @param columnComments    列注释
+     *
+     * @param tableNames     表名
+     * @param columnNames    列名
+     * @param columnTypes    列类型
+     * @param columnComments 列注释
      * @return
      */
     public static Boolean generateFileDaos(String tableNames, List<String> columnNames, List<String> columnTypes, List<String> columnComments) {
@@ -89,6 +91,7 @@ public class FileDatabaseUtil {
         sb.append("import org.apache.ibatis.jdbc.SQL;\n\n");
         sb.append("import java.util.Date;\n");
         sb.append("import java.util.List;\n");
+        sb.append("import java.util.Map;\n");
         sb.append("import java.math.BigDecimal;\n");
         sb.append("import " + DatabaseConfigs.PACKAGEPATHS + ".entity." + tableName + ";\n\n");
         sb.append("@Mapper\n");
@@ -97,25 +100,32 @@ public class FileDatabaseUtil {
         sb.append("     * 添加\n");
         sb.append("     * @param model   实体类\n");
         sb.append("     */\n");
-        sb.append("    @InsertProvider(type = " + tableName + "DaoProvider.class, method = \"create\")\n");
+        sb.append("    @InsertProvider(type = " + tableName + "Dao." + tableName + "DaoProvider.class, method = \"create\")\n");
         sb.append("    Integer create(" + tableName + " model);\n\n");
         sb.append("    /**\n");
         sb.append("     * 修改\n");
         sb.append("     * @param model   实体类\n");
         sb.append("     */\n");
-        sb.append("    @UpdateProvider(type = " + tableName + "DaoProvider.class, method = \"update\")\n");
+        sb.append("    @UpdateProvider(type = " + tableName + "Dao." + tableName + "DaoProvider.class, method = \"update\")\n");
         sb.append("    Integer update(" + tableName + " model);\n\n");
         sb.append("    /**\n");
         sb.append("     * 查询\n");
         sb.append("     * @param model   实体类\n");
         sb.append("     */\n");
-        sb.append("    @SelectProvider(type = " + tableName + "DaoProvider.class, method = \"findAll\")\n");
+        sb.append("    @SelectProvider(type = " + tableName + "Dao." + tableName + "DaoProvider.class, method = \"findAll\")\n");
         sb.append("    List<" + tableName + "> findAll(" + tableName + " model);\n\n");
+        sb.append("    /**\n");
+        sb.append("     * 批量添加\n");
+        sb.append("     * @param model   实体类\n");
+        sb.append("     */\n");
+        sb.append("    @SelectProvider(type = " + tableName + "Dao." + tableName + "DaoProvider.class, method = \"findAll\")\n");
+        sb.append("    Integer findAll(@Param(\"list\") List<" + tableName + "> model);\n\n");
         sb.append("\n\n\n");
         sb.append("    class " + tableName + "DaoProvider{\n");
-        sb.append(daoCreate(tableNames,columnNames,columnTypes,columnComments));
-        sb.append(daoUpdate(tableNames,columnNames,columnTypes,columnComments));
-        sb.append(daoQuery(tableNames,columnNames,columnTypes,columnComments));
+        sb.append(daoCreate(tableNames, columnNames, columnTypes, columnComments));
+        sb.append(daoUpdate(tableNames, columnNames, columnTypes, columnComments));
+        sb.append(daoQuery(tableNames, columnNames, columnTypes, columnComments));
+        sb.append(daoCreateAll(tableNames, columnNames, columnTypes, columnComments));
         sb.append("    }\n");
         sb.append("}\n");
         generateFileModel(tableNames, sb.toString(), DatabaseConfigs.PATHS + "dao\\" + tableName + "Dao.java");
@@ -125,13 +135,14 @@ public class FileDatabaseUtil {
 
     /**
      * 添加
+     *
      * @param tableNames
      * @param columnNames
      * @param columnTypes
      * @param columnComments
      * @return
      */
-    private static String daoCreate(String tableNames, List<String> columnNames, List<String> columnTypes, List<String> columnComments){
+    private static String daoCreate(String tableNames, List<String> columnNames, List<String> columnTypes, List<String> columnComments) {
         StringBuilder sb = new StringBuilder();
         String tableName = captureName(tableNames);
         sb.append("\n");
@@ -147,10 +158,10 @@ public class FileDatabaseUtil {
             //大写首字母
             String capName = captureName(name);
             String littleCaptureName = littleCaptureName(name);
-            String type = columnType(columnTypes.get(i),columnNames.get(i));
-            if("String".equals(type)) {
+            String type = columnType(columnTypes.get(i), columnNames.get(i));
+            if ("String".equals(type)) {
                 sb.append("                if(!(model.get" + capName + "() == null || model.get" + capName + "().isEmpty())){\n");
-            }else {
+            } else {
                 sb.append("                if(model.get" + capName + "() != null){\n");
             }
             sb.append("                    VALUES(\"" + name + "\", \"#{" + littleCaptureName + "}\");\n");
@@ -163,13 +174,14 @@ public class FileDatabaseUtil {
 
     /**
      * 修改
+     *
      * @param tableNames
      * @param columnNames
      * @param columnTypes
      * @param columnComments
      * @return
      */
-    private static String daoUpdate(String tableNames, List<String> columnNames, List<String> columnTypes, List<String> columnComments){
+    private static String daoUpdate(String tableNames, List<String> columnNames, List<String> columnTypes, List<String> columnComments) {
         StringBuilder sb = new StringBuilder();
         String tableName = captureName(tableNames);
         sb.append("\n");
@@ -185,10 +197,10 @@ public class FileDatabaseUtil {
             //大写首字母
             String capName = captureName(name);
             String littleCaptureName = littleCaptureName(name);
-            String type = columnType(columnTypes.get(i),columnNames.get(i));
-            if("String".equals(type)) {
+            String type = columnType(columnTypes.get(i), columnNames.get(i));
+            if ("String".equals(type)) {
                 sb.append("                if(!(model.get" + capName + "() == null || model.get" + capName + "().isEmpty())){\n");
-            }else {
+            } else {
                 sb.append("                if(model.get" + capName + "() != null){\n");
             }
             sb.append("                    SET(\"" + name + "=#{" + littleCaptureName + "}\");\n");
@@ -201,14 +213,15 @@ public class FileDatabaseUtil {
     }
 
     /**
-     * 修改
+     * 查询
+     *
      * @param tableNames
      * @param columnNames
      * @param columnTypes
      * @param columnComments
      * @return
      */
-    private static String daoQuery(String tableNames, List<String> columnNames, List<String> columnTypes, List<String> columnComments){
+    private static String daoQuery(String tableNames, List<String> columnNames, List<String> columnTypes, List<String> columnComments) {
         StringBuilder sb = new StringBuilder();
         String tableName = captureName(tableNames);
         //别名
@@ -223,24 +236,86 @@ public class FileDatabaseUtil {
         sb.append("            sb.append(\" SELECT \");\n");
         sb.append("            sb.append(\"");
         for (int i = 0; i < columnNames.size(); i++) {
-            if(i == 0){
+            if (i == 0) {
                 sb.append(" " + alias + "." + columnNames.get(i) + ",");
                 continue;
             }
-            if(i == (columnNames.size() - 1)){
+            if (i == (columnNames.size() - 1)) {
                 sb.append(" " + alias + "." + columnNames.get(i) + "\");\n");
                 continue;
             }
-            if(i % 5 == 0){
+            if (i % 5 == 0) {
                 sb.append("\");\n");
                 sb.append("            sb.append(\"");
                 sb.append(" " + alias + "." + columnNames.get(i) + ",");
-            }else {
+            } else {
                 sb.append(" " + alias + "." + columnNames.get(i) + ",");
             }
         }
         sb.append("            sb.append(\" FROM " + tableNames + " " + alias + "\");\n");
         sb.append("            return sb.toString();\n");
+        sb.append("        }\n\n");
+        return sb.toString();
+    }
+
+    /**
+     * 批量添加
+     *
+     * @param tableNames
+     * @param columnNames
+     * @param columnTypes
+     * @param columnComments
+     * @return
+     */
+    private static String daoCreateAll(String tableNames, List<String> columnNames, List<String> columnTypes, List<String> columnComments) {
+        StringBuilder sb = new StringBuilder();
+        String tableName = captureName(tableNames);
+        //别名
+        char alias = tableNames.charAt(0);
+        sb.append("\n");
+        sb.append("        /**\n");
+        sb.append("         * 批量添加\n");
+        sb.append("         * @param map   实体类\n");
+        sb.append("         */\n");
+        sb.append("        public String createAll(final Map map){\n");
+        sb.append("            List<" + tableName + "> model = (List<" + tableName + ">) map.get(\"list\");\n");
+        sb.append("            return new SQL() {{\n");
+        sb.append("                INSERT_INTO(\"" + tableNames + "\");\n");
+        sb.append("                INTO_COLUMNS(");
+        for (int i = 0; i < columnNames.size(); i++) {
+            if (i == 0) {
+                sb.append("\"" + columnNames.get(i) + "\",");
+                continue;
+            }
+            if (i == (columnNames.size() - 1)) {
+                sb.append(" \"" + columnNames.get(i) + "\");\n");
+                continue;
+            }
+            if (i % 7 == 0) {
+                sb.append("\n                       ");
+            }
+            sb.append(" \"" + columnNames.get(i) + "\",");
+        }
+        sb.append("                for (int i = 0; i < model.size(); i++) {\n");
+        sb.append("                    INTO_VALUES(");
+        for (int i = 0; i < columnNames.size(); i++) {
+            String name = columnNames.get(i);
+            String littleCaptureName = littleCaptureName(name);
+            if (i == 0) {
+                sb.append("\"#{list[\" + i + \"]." + littleCaptureName + "}\",");
+                continue;
+            }
+            if (i == (columnNames.size() - 1)) {
+                sb.append("\"#{list[\" + i + \"]." + littleCaptureName + "}\");\n");
+                continue;
+            }
+            if (i % 2 == 0) {
+                sb.append("\n                           ");
+            }
+            sb.append(" \"#{list[\" + i + \"]." + littleCaptureName + "}\",");
+        }
+        sb.append("                }\n");
+        sb.append("            }}.toString();\n");
         sb.append("        }\n\n");
         return sb.toString();
     }
@@ -251,7 +326,7 @@ public class FileDatabaseUtil {
      *
      * @return
      */
-    public static Boolean generateFileModel(String tableName, String model,String path) {
+    public static Boolean generateFileModel(String tableName, String model, String path) {
         OutputStream out = null;
         try {
             out = new FileOutputStream(getFile(path));
@@ -274,7 +349,7 @@ public class FileDatabaseUtil {
      * @param dataType
      * @return
      */
-    private static String columnType(String dataType,String columnName) {
+    private static String columnType(String dataType, String columnName) {
         if (dataType == null) {
             return "String";
         }
@@ -284,10 +359,10 @@ public class FileDatabaseUtil {
         }
         //Integer类型
         if (integerType(dataType)) {
-            if(dataType.length() < 2){
+            if (dataType.length() < 2) {
                 return "Integer";
             }
-            if("id".equals(columnName.substring(columnName.length()-2)) || "Id".equals(columnName.substring(columnName.length()-2))){
+            if ("id".equals(columnName.substring(columnName.length() - 2)) || "Id".equals(columnName.substring(columnName.length() - 2))) {
                 return "Long";
             }
             return "Integer";
@@ -400,8 +475,10 @@ public class FileDatabaseUtil {
         }
         return false;
     }
+
     /**
      * 判断是否为布尔类型
+     *
      * @param dataType
      * @return
      */
@@ -414,20 +491,21 @@ public class FileDatabaseUtil {
 
     /**
      * 首字母大写 如果有下划线 那么下划线之后的第一个字符大写
+     *
      * @param name
      * @return
      */
     public static String captureName(String name) {
         String[] strs = null;
-        if(name == null){
+        if (name == null) {
             return null;
         }
         strs = name.split("_");
-        if (strs == null || strs.length < 1){
+        if (strs == null || strs.length < 1) {
             strs = new String[]{name};
         }
         StringBuilder sb = new StringBuilder();
-        for (String str : strs){
+        for (String str : strs) {
             char[] cs = str.toCharArray();
             cs[0] -= 32;
             sb.append(String.valueOf(cs));
@@ -438,25 +516,26 @@ public class FileDatabaseUtil {
 
     /**
      * 首字母小写 如果有下划线 那么下划线之后的第一个字符大写
+     *
      * @param name
      * @return
      */
     public static String littleCaptureName(String name) {
         String[] strs = null;
-        if(name == null){
+        if (name == null) {
             return null;
         }
         strs = name.split("_");
-        if (strs == null || strs.length < 1){
+        if (strs == null || strs.length < 1) {
             strs = new String[]{name};
         }
         StringBuilder sb = new StringBuilder();
         int i = 0;
-        for (String str : strs){
-            if(i == 0){
-               sb.append(str);
-               ++i;
-               continue;
+        for (String str : strs) {
+            if (i == 0) {
+                sb.append(str);
+                ++i;
+                continue;
             }
             char[] cs = str.toCharArray();
             cs[0] -= 32;
@@ -467,6 +546,7 @@ public class FileDatabaseUtil {
 
     /**
      * 获取文件判断是否存在
+     *
      * @param filePath
      * @return
      */
