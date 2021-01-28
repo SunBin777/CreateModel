@@ -118,8 +118,8 @@ public class FileDatabaseUtil {
         sb.append("     * 批量添加\n");
         sb.append("     * @param model   实体类\n");
         sb.append("     */\n");
-        sb.append("    @SelectProvider(type = " + tableName + "Dao." + tableName + "DaoProvider.class, method = \"findAll\")\n");
-        sb.append("    Integer findAll(@Param(\"list\") List<" + tableName + "> model);\n\n");
+        sb.append("    @SelectProvider(type = " + tableName + "Dao." + tableName + "DaoProvider.class, method = \"createAll\")\n");
+        sb.append("    Integer createAll(@Param(\"list\") List<" + tableName + "> model);\n\n");
         sb.append("\n\n\n");
         sb.append("    class " + tableName + "DaoProvider{\n");
         sb.append(daoCreate(tableNames, columnNames, columnTypes, columnComments));
