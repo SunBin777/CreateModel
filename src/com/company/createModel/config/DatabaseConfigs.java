@@ -1,6 +1,7 @@
 package com.company.createModel.config;
 
 /**
+ * 所有的配置类
  * @author: 孙斌
  * @create: 2020-06-29 10:08
  **/
@@ -14,7 +15,9 @@ public class DatabaseConfigs {
     //密码
     public final static String PASSWORD = "root";
     //默认路径
-    public final static String PATHS = "src\\com\\company\\createModel\\";
+    public final static String PATHS = "src\\com\\company\\createModel\\generateFile\\";
     //包路径
-    public final static String PACKAGEPATHS = "com.company.createModel";
+    public final static String PACKAGEPATHS = "com.company.createModel.generateFile";
+    //作者
+    public final static String AUTHOR = "孙斌";
 }
